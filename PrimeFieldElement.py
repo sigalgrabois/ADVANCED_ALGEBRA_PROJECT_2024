@@ -35,10 +35,12 @@ class PrimeFieldElement:
                 return self * other.inverse()
         else:
             raise ValueError("Cannot perform division with different prime fields")
+
     def __eq__(self, other):
         if isinstance(other, PrimeFieldElement):
             return self.a == other.a and self.p == other.p
         return False
+
     def __pow__(self, power, modulo=None):
         return PrimeFieldElement(pow(self.a, power, self.p), self.p)
 
@@ -53,8 +55,6 @@ class PrimeFieldElement:
             return PrimeFieldElement(s % p, p)
 
 
-
-
 def gcd(a, b):
     while b != 0:
         a, b = b, a % b
@@ -67,5 +67,3 @@ def extended_gcd(a, b):
     else:
         d, s, t = extended_gcd(b, a % b)
         return d, t, s - (a // b) * t
-
-
