@@ -1,9 +1,19 @@
 import numpy as np
+from galois import is_prime
+
 
 def gcd(a, b):
+    """
+    This function calculates the greatest common divisor of two integers a and b
+
+    :param a:
+    :param b:
+    :return:
+    """
     while b != 0:
         a, b = b, a % b
     return a
+
 
 def xgcd(a, b):
     """
