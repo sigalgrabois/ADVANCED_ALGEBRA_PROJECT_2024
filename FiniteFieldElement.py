@@ -1,6 +1,7 @@
 import numpy as np
 from utilities import calc_matrix_representation_above_finite_field
 
+
 def polynomial_mod(poly, mod_poly, p):
     """
     Reduce a polynomial by another polynomial in a finite field of order p.
@@ -102,6 +103,6 @@ class FiniteFieldElement:
         inverse_matrix = np.linalg.inv(other.matrix_representation)  # This is not generally correct in finite fields
         div_matrix = self.matrix_representation @ inverse_matrix
         return FiniteFieldElement(self.l, (div_matrix % self.l.p)[0])
+
     def __str__(self):
         return " + ".join(f"{coeff} (mod {self.l.p})*x^{i}" for i, coeff in enumerate(self.a) if coeff != 0)
-

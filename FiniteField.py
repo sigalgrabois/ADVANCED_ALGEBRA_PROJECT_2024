@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def is_irreducible(p, f_x):
     if len(f_x) > 3:
         return True  # Assume irreducibility for polynomials of degree > 3
@@ -8,6 +9,7 @@ def is_irreducible(p, f_x):
             return False
     return True
 
+
 def to_monic(p, f_x):
     leading_coeff = f_x[-1]
     if leading_coeff == 1:
@@ -15,10 +17,12 @@ def to_monic(p, f_x):
     inverse_leading = pow(leading_coeff, -1, p)
     return [coef * inverse_leading % p for coef in f_x]
 
+
 class FiniteField:
     def __init__(self, p, f_x):
         if not is_irreducible(p, f_x) or f_x[0] == 0:
-            raise ValueError("The polynomial is not irreducible or has zero constant term, so a finite field cannot be formed.")
+            raise ValueError(
+                "The polynomial is not irreducible or has zero constant term, so a finite field cannot be formed.")
 
         self.p = p
         self.f_x_original = f_x
@@ -34,12 +38,3 @@ class FiniteField:
 
     def __str__(self):
         return f"FiniteField GF({self.p}^{self.f_x_degree}) with polynomial {self.f_x_monic}"
-
-# Example of usage
-try:
-    p = 3
-    f_x = [1, 0, 2]  # Example polynomial
-    ff = FiniteField(p, f_x)
-    print(ff)
-except ValueError as e:
-    print(e)
