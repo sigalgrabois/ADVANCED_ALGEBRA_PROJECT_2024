@@ -1,34 +1,45 @@
-from galois import is_prime
+import numpy as np
 
-
-def is_irreducible(p, fx_list):
-    if len(fx_list) <= 3:  # Check only for degree 2 or 3
-        for i in range(1, p):  # Start from 1 because 0 will always satisfy the polynomial
-            total = sum(coef * (i ** idx) for idx, coef in enumerate(reversed(fx_list)))
-            if total % p == 0:
-                return False
+def is_irreducible(p, f_x):
+    if len(f_x) > 3:
+        return True  # Assume irreducibility for polynomials of degree > 3
+    for i in range(p):
+        if sum(coef * (i ** idx) for idx, coef in enumerate(reversed(f_x))) % p == 0:
+            return False
     return True
 
-
-def check_params(p, fx_list):
-    if not is_prime(p):
-        raise ValueError(f"p ({p}) must be prime")
-    if fx_list[-1] == 0:
-        raise ValueError(f"The value of the last coefficient cannot be zero: {fx_list}")
-    if not is_irreducible(p, fx_list):
-        raise ValueError(f"The polynomial {fx_list} is not irreducible for prime {p}")
-
+def to_monic(p, f_x):
+    leading_coeff = f_x[-1]
+    if leading_coeff == 1:
+        return f_x
+    inverse_leading = pow(leading_coeff, -1, p)
+    return [coef * inverse_leading % p for coef in f_x]
 
 class FiniteField:
-    def __init__(self, p, fx_list):
-        check_params(p, fx_list)
+    def __init__(self, p, f_x):
+        if not is_irreducible(p, f_x) or f_x[0] == 0:
+            raise ValueError("The polynomial is not irreducible or has zero constant term, so a finite field cannot be formed.")
+
         self.p = p
-        self.fx_list_coefficients = fx_list
-        self.degree = len(fx_list) - 1
-        self.elements = None  # To be generated lazily
+        self.f_x_original = f_x
+        self.f_x_degree = len(f_x) - 1
+        self.f_x_monic = to_monic(p, f_x)
+        self.field_size = p ** self.f_x_degree
+
+        # Calculate congruate equivalency
+        self.congruate_equivalency = [-self.f_x_monic[i] % p for i in range(self.f_x_degree)]
 
     def __eq__(self, other):
-        return self.p == other.p and self.fx_list_coefficients == other.fx_list_coefficients
+        return isinstance(other, FiniteField) and self.p == other.p and self.f_x_monic == other.f_x_monic
 
     def __str__(self):
-        return f"F[{self.p}]({self.fx_list_coefficients})"
+        return f"FiniteField GF({self.p}^{self.f_x_degree}) with polynomial {self.f_x_monic}"
+
+# Example of usage
+try:
+    p = 3
+    f_x = [1, 0, 2]  # Example polynomial
+    ff = FiniteField(p, f_x)
+    print(ff)
+except ValueError as e:
+    print(e)
