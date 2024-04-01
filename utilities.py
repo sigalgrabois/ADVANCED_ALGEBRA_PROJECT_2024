@@ -1,16 +1,23 @@
 import numpy as np
 
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
 
 def xgcd(a, b):
     """
-    Perform the Extended Euclidean Algorithm.
-    Computes the greatest common divisor (GCD) of a and b, along with the
-    coefficients s and t such that d = s*a + t*b where d is the GCD of a and b.
+    This function performs the extended Euclides algorithm which receives two
+    complete numbers a and b and returns their g.c.d, (a,b)=d and two complete
+    numbers s,t which uphold: d=s*a+t*b
     """
 
     # Sanity checks
     if not a.is_integer() or not b.is_integer():
         raise ValueError("Both inputs must be integers.")
+
+    if (a % 1) != 0 or (b % 1) != 0:
+        raise ValueError("both inputs must be complete numbers.")
 
     # Edge cases
     if a == 0 and b == 0:
@@ -50,9 +57,6 @@ def xgcd(a, b):
         raise ValueError("Something went wrong with the calculations.")
 
     return d, s, t
-
-
-import numpy as np
 
 
 def calc_matrix_representation_above_finite_field(a, l):

@@ -1,9 +1,17 @@
 from galois import is_prime
+from utilities import *
 
 
 class PrimeFieldElement:
+    """
+        This class represents a prime field element. For construction, it
+        receives two integers (a,p), where p is prime number and a is an element in
+        GF(p). NOTE: GF(p):={0,1,...p-1}, hence any received 'a' would be translated to this set of values by appling modulu p. The class provides implementation of
+        basic arithmetic operations above GF(p).''''''
+    """
+
     # constructor
-    def __init__(self, a, p):
+    def __init__(self, a: int, p: int):
         if not is_prime(p):
             raise ValueError(f"p ({p}) is not prime")
         self.a = a % p
@@ -51,19 +59,5 @@ class PrimeFieldElement:
         elif gcd(a, p) != 1:
             raise ValueError("Element does not have an inverse in the prime field")
         else:
-            _, s, _ = extended_gcd(a, p)
-            return PrimeFieldElement(s % p, p)
-
-
-def gcd(a, b):
-    while b != 0:
-        a, b = b, a % b
-    return a
-
-
-def extended_gcd(a, b):
-    if b == 0:
-        return a, 1, 0
-    else:
-        d, s, t = extended_gcd(b, a % b)
-        return d, t, s - (a // b) * t
+            d, s, t = xgcd(a, p)
+            return PrimeFieldElement(s, p)
