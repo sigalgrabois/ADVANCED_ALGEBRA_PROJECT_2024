@@ -1,6 +1,8 @@
 import numpy as np
 from galois import is_prime
 
+import PrimeFieldElement
+
 
 def gcd(a, b):
     """

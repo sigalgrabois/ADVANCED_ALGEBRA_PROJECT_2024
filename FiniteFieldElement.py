@@ -1,4 +1,6 @@
 import numpy as np
+
+from PrimeFieldElement import PrimeFieldElement
 from utilities import calc_matrix_representation_above_finite_field
 
 
@@ -92,17 +94,24 @@ class FiniteFieldElement:
 
         return FiniteFieldElement(self.l, result_coeffs)
 
+    # DoTo: fix this
     def __truediv__(self, other):
         if self.l != other.l:
             raise ValueError("Both elements must be above the same field")
         if other.is_0:
             raise ZeroDivisionError("Division by zero element in finite field not defined")
-
-        # Division implementation here should consider field's properties
-        # Simplified version for demonstration, assuming matrix inverse is defined elsewhere
         inverse_matrix = np.linalg.inv(other.matrix_representation)  # This is not generally correct in finite fields
         div_matrix = self.matrix_representation @ inverse_matrix
         return FiniteFieldElement(self.l, (div_matrix % self.l.p)[0])
 
     def __str__(self):
         return " + ".join(f"{coeff} (mod {self.l.p})*x^{i}" for i, coeff in enumerate(self.a) if coeff != 0)
+
+    def __repr__(self):
+        coeffs_repr = ", ".join(f"{coeff} (mod {self.l.p})" for coeff in self.a)
+        return f"FiniteFieldElement(FiniteField({self.l.p}, {self.l.f_x_original}), [{coeffs_repr}])"
+
+    def __eq__(self, other):
+        if isinstance(other, FiniteFieldElement):
+            return self.a == other.a and self.l == other.l
+        return False
