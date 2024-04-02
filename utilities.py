@@ -73,29 +73,3 @@ def xgcd(a, b):
         raise ValueError("Something went wrong with the calculations.")
 
     return d, s, t
-
-
-def calc_matrix_representation_above_finite_field(a, l):
-    n = l.f_x_degree  # extension dimension of the finite field
-    p = l.p  # the prime used as the kernel of the extended field
-    element_matrix_representation = np.zeros((n, n), dtype=int)
-
-    # Initialization: first column equals the element itself
-    temp_polynomial = np.array(a + [0] * (n - len(a)))  # Extend a to match the field's degree if necessary
-    element_matrix_representation[:, 0] = temp_polynomial
-
-    for i in range(1, n):
-        # Multiplication in x
-        shift_right_polynomial = np.roll(temp_polynomial, shift=1)
-        shift_right_polynomial[0] = 0  # Set the first element to 0 after the shift
-
-        # If the highest degree term is nonzero, calculate the congruent equivalent
-        if temp_polynomial[-1] != 0:
-            congruent_equivalent = [(temp_polynomial[-1] * c) % p for c in l.congruate_equivalency]
-            temp_polynomial = (congruent_equivalent + shift_right_polynomial) % p
-        else:
-            temp_polynomial = shift_right_polynomial
-
-        element_matrix_representation[:, i] = temp_polynomial
-
-    return element_matrix_representation

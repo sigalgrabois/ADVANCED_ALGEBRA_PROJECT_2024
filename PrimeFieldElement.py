@@ -66,3 +66,5 @@ class PrimeFieldElement:
 
     def __pow__(self, power, modulo=None):
         return PrimeFieldElement(pow(self.a, power, self.p), self.p)
+    def __str__(self):
+        return "{}".format(self.a)
