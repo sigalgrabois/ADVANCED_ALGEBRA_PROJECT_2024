@@ -58,7 +58,6 @@ class FiniteFieldElement:
         else:
             self.matrix_representation = self.calc_matrix_representation()
 
-
     def calc_matrix_representation(self):
         a, l = self.a, self.l
         n = l.f_x_degree
@@ -72,9 +71,10 @@ class FiniteFieldElement:
 
         for i in range(1, n):
             # Multiplication in x
-            shift_right_polynomial = np.roll(temp_polynomial, shift=1)
+            shift_right_polynomial = np.concatenate(([0], temp_polynomial[:n - 1]))  # np.roll(temp_polynomial, shift=1)
             if temp_polynomial[-1] != 0:
-                congruent_equivalent = [(temp_polynomial[-1] * c) % p for c in l.congruate_equivalency]
+                congruent_equivalent = np.mod(temp_polynomial[-1] * l.congruate_equivalency,
+                                              p)  # [(temp_polynomial[-1] * c) % p for c in l.congruate_equivalency]
                 temp_polynomial = (congruent_equivalent + shift_right_polynomial) % p
             else:
                 temp_polynomial = shift_right_polynomial
@@ -158,32 +158,3 @@ class FiniteFieldElement:
         if isinstance(other, FiniteFieldElement):
             return self.a == other.a and self.l == other.l
         return False
-
-
-if __name__ == '__main__':
-    def run_section_4():
-        print(f"====================================")
-        print(f"section (4) - finite field element and matrix representation")
-        print(f"====================================")
-
-        # Define a Finite Field:
-        p = 47  # prime number to set the field
-        fx_coeff = [42, 3, 0, 1]  # a irreducible poly' coeff': for a_n*x^n+...+a_1*x+a_0 -> [a_0, a_1, ...]
-        l = FiniteField(p, fx_coeff)  # the finite field object
-
-        # Define a poly' by its coeff'
-        a_coeff = [1, 2, 3]
-        b_coeff = [1, 1, 1]
-        a = FiniteFieldElement(l, a_coeff)  # an object of finite field element
-        b = FiniteFieldElement(l, b_coeff)  # an object of finite field element
-
-        print(f"polynomial a coeff' are:\n{a_coeff}")
-        print(
-            f"polynomial a in matrix representation:\n{a.matrix_representation}\n")  # [[1, 2, 3], [15, 39, 2], [10, 9, 39]]
-
-        print(f"polynomial b coeff' are:\n{b_coeff}")
-        print(
-            f"polynomial b in matrix representation:\n{b.matrix_representation}")  # [[1, 1, 1], [5, 45  1], [5, 2, 45]]
-
-
-    run_section_4()

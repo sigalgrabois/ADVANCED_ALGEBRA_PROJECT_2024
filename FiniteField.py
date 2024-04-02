@@ -67,14 +67,14 @@ class FiniteField:
 
         # Calculate congruate equivalency
         lower_power_coeff_vec = np.array(self.f_x_monic[:-1])  # coefficients of x^(f_x_degree) in the monic polynomial
+        # self.congruate_equivalency = np.mod(-lower_power_coeff_vec, self.p)
         self.congruate_equivalency = (-lower_power_coeff_vec) % self.p
 
     def __eq__(self, other):
         return isinstance(other, FiniteField) and self.p == other.p and self.f_x_monic == other.f_x_monic
 
-
-
     def __repr__(self):
         return f'FiniteField({self.p}, {self.f_x_original})'
+
     def __str__(self):
         return f"F_{self.p}({self.f_x_original})"
