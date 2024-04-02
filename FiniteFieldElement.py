@@ -58,6 +58,7 @@ class FiniteFieldElement:
         else:
             self.matrix_representation = self.calc_matrix_representation()
 
+
     def calc_matrix_representation(self):
         a, l = self.a, self.l
         n = l.f_x_degree
@@ -177,10 +178,12 @@ if __name__ == '__main__':
         b = FiniteFieldElement(l, b_coeff)  # an object of finite field element
 
         print(f"polynomial a coeff' are:\n{a_coeff}")
-        print(f"polynomial a in matrix representation:\n{a.matrix_representation}\n")  # [[1, 2, 3], [15, 39, 2], [10, 9, 39]]
+        print(
+            f"polynomial a in matrix representation:\n{a.matrix_representation}\n")  # [[1, 2, 3], [15, 39, 2], [10, 9, 39]]
 
         print(f"polynomial b coeff' are:\n{b_coeff}")
-        print(f"polynomial b in matrix representation:\n{b.matrix_representation}")  # [[1, 1, 1], [5, 45  1], [5, 2, 45]]
+        print(
+            f"polynomial b in matrix representation:\n{b.matrix_representation}")  # [[1, 1, 1], [5, 45  1], [5, 2, 45]]
 
 
-
+    run_section_4()
