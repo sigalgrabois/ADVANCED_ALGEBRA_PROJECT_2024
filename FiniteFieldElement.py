@@ -130,21 +130,16 @@ class FiniteFieldElement:
 
         # Calculate the inverse of the determinant of the divisor's matrix
         determinant_of_divider = np.linalg.det(other.matrix_representation)
-        print("Determinant of divider:", determinant_of_divider)
 
         inverse_determinant = PrimeFieldElement(int(round(determinant_of_divider)), other.l.p).inverse()
-        print("Inverse determinant:", inverse_determinant)
 
         # Calculate the adjugate matrix and multiply it by the inverse determinant
         adjugate_matrix = np.round(np.linalg.inv(other.matrix_representation) * determinant_of_divider)
-        print("Adjugate matrix:", adjugate_matrix)
 
         inverse_matrix = np.mod(adjugate_matrix * inverse_determinant.a, other.l.p)
-        print("Inverse matrix:", inverse_matrix)
 
         # Perform matrix division and get the first column as the result
         division_matrix = self.matrix_representation @ inverse_matrix
-        print("Division matrix:", division_matrix)
 
         formed_element_matrix = np.mod(division_matrix, other.l.p)
         result = formed_element_matrix[:, 0]
