@@ -147,6 +147,48 @@ class FiniteFieldElement:
 
         return FiniteFieldElement(other.l, result.tolist())
 
+    def __pow__(self, exponent):
+        e1_element = FiniteFieldElement(self.l, [1] + [0] * (self.l.f_x_degree - 1))
+        base = self
+        if exponent == 0:
+            # Anything raised to the power of 0 is 1
+            return e1_element
+        elif exponent == 1:
+            # Return the element itself
+            return base
+        elif exponent < 0:
+            # Compute the inverse and exponentiate with the absolute value of the exponent
+            base = e1_element/base
+            exponent = -1*exponent
+        # Apply exponentiation by squaring
+        result = e1_element
+        while exponent > 0:
+            if exponent % 2 == 1:
+                result *= base  # Multiply result by the base if the current bit of the exponent is 1
+            base *= base  # Square the base
+            exponent //= 2  # Shift exponent to the right by 1 bit
+        return result
+
+    def multiplicative_order(self):
+        """
+        Compute the multiplicative order of the element.
+        :return: The multiplicative order of the element.
+        """
+        if self.is_0:
+            raise ValueError("Multiplicative order is not defined for zero element")
+
+        power = 1
+        curr_element = self
+        e1_element = FiniteFieldElement(self.l, [1] + [0] * (self.l.f_x_degree - 1))
+        while curr_element != e1_element:
+            curr_element *= self  # Multiply by self
+            power += 1
+
+        return power
+
+
+
+
     def __str__(self):
         return " + ".join(f"{coeff} (mod {self.l.p})*x^{i}" for i, coeff in enumerate(self.a) if coeff != 0)
 

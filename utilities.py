@@ -27,7 +27,7 @@ def xgcd(a, b):
     """
 
     # Sanity checks to ensure that inputs are integers
-    if not a.is_integer() or not b.is_integer():
+    if not isinstance(a, int) or not isinstance(b, int):
         raise ValueError("Both inputs must be integers.")
 
     # Additional check to ensure inputs are not fractional parts (should be redundant due to is_integer check)
