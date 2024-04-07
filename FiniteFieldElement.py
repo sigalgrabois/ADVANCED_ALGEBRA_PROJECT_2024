@@ -4,6 +4,9 @@ from FiniteField import FiniteField
 from PrimeFieldElement import PrimeFieldElement
 import galois
 
+# TODO:
+# 1. delete the extra printings in the code below
+# 2. use the adjugate_matrix function from a package instead of the numpy function
 
 def polynomial_mod(poly, mod_poly, p):
     """
@@ -200,3 +203,32 @@ class FiniteFieldElement:
         if isinstance(other, FiniteFieldElement):
             return self.a == other.a and self.l == other.l
         return False
+
+
+if __name__ == '__main__':
+    def run_section_4():
+        print(f"====================================")
+        print(f"section (4) - finite field element and matrix representation")
+        print(f"====================================")
+
+        # Define a Finite Field:
+        p = 47  # prime number to set the field
+        fx_coeff = [42, 3, 0, 1]  # a irreducible poly' coeff': for a_n*x^n+...+a_1*x+a_0 -> [a_0, a_1, ...]
+        l = FiniteField(p, fx_coeff)  # the finite field object
+
+        # Define a poly' by its coeff'
+        a_coeff = [1, 2, 3]
+        b_coeff = [1, 1, 1]
+        a = FiniteFieldElement(l, a_coeff)  # an object of finite field element
+        b = FiniteFieldElement(l, b_coeff)  # an object of finite field element
+
+        print(f"polynomial a coeff' are:\n{a_coeff}")
+        print(
+            f"polynomial a in matrix representation:\n{a.matrix_representation}\n")  # [[1, 2, 3], [15, 39, 2], [10, 9, 39]]
+
+        print(f"polynomial b coeff' are:\n{b_coeff}")
+        print(
+            f"polynomial b in matrix representation:\n{b.matrix_representation}")  # [[1, 1, 1], [5, 45  1], [5, 2, 45]]
+
+
+    run_section_4()
