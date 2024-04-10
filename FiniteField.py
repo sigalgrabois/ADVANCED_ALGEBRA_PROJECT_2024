@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 from galois import is_prime
 
-from FiniteFieldElement import FiniteFieldElement
+from FiniteFieldElement import *
 from PrimeFieldElement import PrimeFieldElement
 
 

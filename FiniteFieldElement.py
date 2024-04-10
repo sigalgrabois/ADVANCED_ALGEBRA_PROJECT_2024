@@ -1,12 +1,14 @@
 import numpy as np
 
-from FiniteField import FiniteField
+import FiniteField
+from FiniteField import *
 from PrimeFieldElement import PrimeFieldElement
 import galois
 
 # TODO:
 # 1. delete the extra printings in the code below
 # 2. use the adjugate_matrix function from a package instead of the numpy function
+# 3. check consistency of the code - it brings back an element.
 
 def polynomial_mod(poly, mod_poly, p):
     """
@@ -214,7 +216,7 @@ if __name__ == '__main__':
         # Define a Finite Field:
         p = 47  # prime number to set the field
         fx_coeff = [42, 3, 0, 1]  # a irreducible poly' coeff': for a_n*x^n+...+a_1*x+a_0 -> [a_0, a_1, ...]
-        l = FiniteField(p, fx_coeff)  # the finite field object
+        l = FiniteField.FiniteField(p, fx_coeff)  # the finite field object
 
         # Define a poly' by its coeff'
         a_coeff = [1, 2, 3]
@@ -231,4 +233,3 @@ if __name__ == '__main__':
             f"polynomial b in matrix representation:\n{b.matrix_representation}")  # [[1, 1, 1], [5, 45  1], [5, 2, 45]]
 
 
-    run_section_4()
