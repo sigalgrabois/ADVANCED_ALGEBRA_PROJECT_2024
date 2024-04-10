@@ -1,6 +1,9 @@
+import itertools
+
 import numpy as np
 from galois import is_prime
 
+from FiniteFieldElement import FiniteFieldElement
 from PrimeFieldElement import PrimeFieldElement
 
 
@@ -69,6 +72,34 @@ class FiniteField:
         lower_power_coeff_vec = np.array(self.f_x_monic[:-1])  # coefficients of x^(f_x_degree) in the monic polynomial
         # self.congruate_equivalency = np.mod(-lower_power_coeff_vec, self.p)
         self.congruate_equivalency = (-lower_power_coeff_vec) % self.p
+
+    def elements(self):
+        """
+        Generate all elements in the finite field.
+        :return: A generator yielding all elements in the finite field.
+        """
+        # Generate all possible coefficients
+        coefficients = range(self.p)
+
+        # Generate all combinations of coefficients for polynomials up to degree f_x_degree - 1
+        for coeffs in itertools.product(coefficients, repeat=self.f_x_degree):
+            # Yield the corresponding FiniteFieldElement
+            yield FiniteFieldElement(self, coeffs)
+
+    def find_generator(self):
+        """
+        Find a generator of the multiplicative group of the finite field.
+        :return: A generator of the multiplicative group.
+        """
+        e0_element = FiniteFieldElement(self, [0] * self.f_x_degree)
+
+        for alpha in self.elements():
+            if alpha == e0_element:
+                continue  # Skip the zero element
+            order_alpha = alpha.multiplicative_order()
+            if order_alpha == self.field_size - 1:
+                return alpha
+        raise ValueError("No generator found in the finite field.")
 
     def __eq__(self, other):
         return isinstance(other, FiniteField) and self.p == other.p and self.f_x_monic == other.f_x_monic
