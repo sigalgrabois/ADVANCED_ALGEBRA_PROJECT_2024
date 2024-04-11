@@ -7,80 +7,74 @@ import FiniteField
 import FiniteFieldElement
 
 
-# Baby stey:
-# 1. create a dictinary with size m
-
+# TODO:
+# 1. change the dictionary to be int values in the vectors.
 
 def find_in_dict(dictionary, vector):
-    # check if the vector is in the dictionary or not - the values of the dictionary are tuples where the second element is the vector
-    # if the vector is in the dictionary return the first element of the tuple - the index of the vector
-    # otherwise return None
     for key, value in dictionary.items():
-        if value[1] == vector:
-            return value[0]
-        else:
-            return None
+        for idx, vec in value:
+            if np.array_equal(vec, vector):
+                return key, idx
+    return None, None
 
 
 def BSGS(l: FiniteField, g: FiniteFieldElement, h: FiniteFieldElement):
-    """
-
-    :param l:
-    :param g:
-    :param h: the result of g^x
-    :return:
-    """
     m = sqrt(l.field_size)
-    # check that m is an integer
     if not m.is_integer():
-        # throw an error if m is not an integer
         raise ValueError("The group size must be a perfect square.")
-    # create a dictionary of size m
+
     baby_steps_dictionary = {}
 
-    # create the vector 1, p, p^2, ..., p^(n-1)
     n = l.f_x_degree
     p = l.p
-    # create a list to be the vector of 1, p, p^2, ..., p^(n-1)
-    base_vector = np.array([])
-    for i in range(n):
-        np.append(base_vector, p ** i)
+    base_vector = np.power(p, np.arange(n))
 
-    # set the baby step from 0 to m
     for j in range(int(m)):
         result = g ** j
         vec_result = np.array(result.a)
-        x = find_in_dict(baby_steps_dictionary, vec_result)
-        if x is None:
-            key = mod(sum(vec_result * base_vector), int(m))
-            baby_steps_dictionary[key] = (j, vec_result)
-        else:
-            continue
-    # giant element generation
+        # check if vec_result is in the dictionary already
+
+        found_key_index = find_in_dict(baby_steps_dictionary, vec_result)
+        if found_key_index[0] is None:
+            # apply round for visibility and casting
+            key = round(mod(round(np.sum(vec_result * base_vector)), int(m)))
+            if key not in baby_steps_dictionary:
+                baby_steps_dictionary[key] = []
+            baby_steps_dictionary[key].append((j, vec_result))
+    print(baby_steps_dictionary)
+
     giant_element = g ** (-m)
-    # loop for the giant steps
     j = 0
-    while j < m - 1:
+    while j < m:
         result = h * (giant_element ** j)
-        vec_result = result.a
-        baby_step_index = find_in_dict(baby_steps_dictionary, vec_result)
-        if baby_step_index is not None:
+        vec_result = np.array(result.a)
+        key, baby_step_index = find_in_dict(baby_steps_dictionary, vec_result)
+        if key is not None and baby_step_index is not None:
             return j * m + baby_step_index
-        else:
-            j += 1
-    # throw an exception if the loop ends without finding the result
+        j += 1
+
     raise ValueError("The result is not found.")
 
 
-p=2
-fx_coeff = [1,1,0,0,0,0,1]
+# Example usage:
+p = 3
+fx_coeff = [2, 1, 0, 0, 1]
 l = FiniteField.FiniteField(p, fx_coeff)
 
-a = [0,1,0,0,0,0]
-
-g = FiniteFieldElement.FiniteFieldElement(l,a)
-l2 = FiniteField.FiniteField(p,fx_coeff)
-h = FiniteFieldElement.FiniteFieldElement(l2,[1,0,1,0,1,1])
+a = [0, 1, 1, 1]
+g = FiniteFieldElement.FiniteFieldElement(l, a)
+l2 = FiniteField.FiniteField(p, fx_coeff)
+h = FiniteFieldElement.FiniteFieldElement(l2, [0, 0, 1, 1])
 result = BSGS(l, g, h)
+
+print("The result is:")
 print(result)
 
+print("example of not found:")
+a = [0, 1, 2, 2]
+g = FiniteFieldElement.FiniteFieldElement(l, a)
+h = FiniteFieldElement.FiniteFieldElement(l2, [0, 2, 2, 0])
+try:
+    result = BSGS(l, g, h)  # should raise an exception
+except ValueError as e:
+    print(e)
