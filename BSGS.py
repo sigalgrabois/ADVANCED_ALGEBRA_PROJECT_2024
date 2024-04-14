@@ -7,8 +7,6 @@ import FiniteField
 import FiniteFieldElement
 
 
-# TODO:
-# 1. change the dictionary to be int values in the vectors.
 
 def find_in_dict(dictionary, vector):
     for key, value in dictionary.items():
@@ -18,11 +16,7 @@ def find_in_dict(dictionary, vector):
     return None, None
 
 
-def BSGS(l: FiniteField, g: FiniteFieldElement, h: FiniteFieldElement):
-    m = sqrt(l.field_size)
-    if not m.is_integer():
-        raise ValueError("The group size must be a perfect square.")
-
+def create_baby_steps(l: FiniteField, g: FiniteFieldElement, m: int):
     baby_steps_dictionary = {}
 
     n = l.f_x_degree
@@ -31,7 +25,7 @@ def BSGS(l: FiniteField, g: FiniteFieldElement, h: FiniteFieldElement):
 
     for j in range(int(m)):
         result = g ** j
-        vec_result = np.array(result.a)
+        vec_result = np.array(result.a).astype(int)
         # check if vec_result is in the dictionary already
 
         found_key_index = find_in_dict(baby_steps_dictionary, vec_result)
@@ -41,13 +35,27 @@ def BSGS(l: FiniteField, g: FiniteFieldElement, h: FiniteFieldElement):
             if key not in baby_steps_dictionary:
                 baby_steps_dictionary[key] = []
             baby_steps_dictionary[key].append((j, vec_result))
-    print(baby_steps_dictionary)
+    return baby_steps_dictionary
+
+
+def BSGS(l: FiniteField, g: FiniteFieldElement, h: FiniteFieldElement):
+    # sanity checks for the input values
+    if g.l != h.l:
+        raise ValueError("The elements must be from the same field.")
+
+    # set m to be the square root of the field size
+    m = sqrt(l.field_size)
+    if not m.is_integer():
+        raise ValueError("The group size must be a perfect square.")
+
+    # create the baby steps dictionary
+    baby_steps_dictionary = create_baby_steps(l, g, m)
 
     giant_element = g ** (-m)
     j = 0
     while j < m:
         result = h * (giant_element ** j)
-        vec_result = np.array(result.a)
+        vec_result = np.array(result.a).astype(int)
         key, baby_step_index = find_in_dict(baby_steps_dictionary, vec_result)
         if key is not None and baby_step_index is not None:
             return j * m + baby_step_index
@@ -78,3 +86,4 @@ try:
     result = BSGS(l, g, h)  # should raise an exception
 except ValueError as e:
     print(e)
+

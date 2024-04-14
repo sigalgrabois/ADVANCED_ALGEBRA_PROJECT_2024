@@ -3,8 +3,7 @@ import itertools
 import numpy as np
 from galois import is_prime
 
-from FiniteFieldElement import *
-from PrimeFieldElement import PrimeFieldElement
+from FiniteFieldElement import FiniteFieldElement
 
 
 def is_irreducible(p, f_x):
