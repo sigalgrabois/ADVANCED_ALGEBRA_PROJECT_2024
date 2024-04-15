@@ -1,13 +1,13 @@
 import numpy as np
+import galois
 
 import FiniteField
-from FiniteField import *
-from PrimeFieldElement import PrimeFieldElement
-import galois
+import PrimeFieldElement
+from sympy import Matrix
+
 
 # TODO:
 # 1. delete the extra printings in the code below
-# 2. use the adjugate_matrix function from a package instead of the numpy function
 # 3. check consistency of the code - it brings back an element.
 
 def polynomial_mod(poly, mod_poly, p):
@@ -87,17 +87,28 @@ class FiniteFieldElement:
             element_matrix_representation[:, i] = temp_polynomial
         return element_matrix_representation
 
-    def pretty_printing(self):
-        print("Polynomial Representation:")
-        poly_repr = '+'.join(f"{coeff}x^{i}" if i > 1 else (f"{coeff}x" if i == 1 else str(coeff))
-                             for i, coeff in enumerate(self.a) if coeff != 0)
-        print(poly_repr or '0')
+    def poly_print(self):
+        # Generate polynomial string representation
+        poly_repr = ' + '.join(
+            f"{coeff}x^{i}" if coeff != 0 and i > 0 else f"{coeff}"
+            for i, coeff in enumerate(self.a)
+            if coeff != 0
+        ) or '0'
+        return f"Polynomial Representation: {poly_repr}"
 
+    def vec_print(self):
         print("Vector Representation:")
         print(self.a)
 
+    def matrix_print(self):
         print("Matrix Representation:")
-        print(self.matrix_representation)
+        for row in self.matrix_representation:
+            print(' '.join(str(x) for x in row))
+
+    def pretty_printing(self):
+        self.poly_print()
+        self.vec_print()
+        self.matrix_print()
 
     def __add__(self, other):
         if self.l != other.l:
@@ -137,10 +148,12 @@ class FiniteFieldElement:
         # Calculate the inverse of the determinant of the divisor's matrix
         determinant_of_divider = np.linalg.det(other.matrix_representation)
 
-        inverse_determinant = PrimeFieldElement(int(round(determinant_of_divider)), other.l.p).inverse()
+        inverse_determinant = PrimeFieldElement.PrimeFieldElement(int(round(determinant_of_divider)),
+                                                                  other.l.p).inverse()
 
         # Calculate the adjugate matrix and multiply it by the inverse determinant
-        adjugate_matrix = np.round(np.linalg.inv(other.matrix_representation) * determinant_of_divider)
+        # change the matrix to sympy matrix
+        adjugate_matrix = Matrix(other.matrix_representation).adjugate()
 
         inverse_matrix = np.mod(adjugate_matrix * inverse_determinant.a, other.l.p)
 
@@ -163,8 +176,8 @@ class FiniteFieldElement:
             return base
         elif exponent < 0:
             # Compute the inverse and exponentiate with the absolute value of the exponent
-            base = e1_element/base
-            exponent = -1*exponent
+            base = e1_element / base
+            exponent = -1 * exponent
         # Apply exponentiation by squaring
         result = e1_element
         while exponent > 0:
@@ -191,11 +204,8 @@ class FiniteFieldElement:
 
         return power
 
-
-
-
     def __str__(self):
-        return " + ".join(f"{coeff} (mod {self.l.p})*x^{i}" for i, coeff in enumerate(self.a) if coeff != 0)
+        return self.poly_print()
 
     def __repr__(self):
         coeffs_repr = ", ".join(f"{coeff} (mod {self.l.p})" for coeff in self.a)
@@ -213,6 +223,7 @@ if __name__ == '__main__':
         print(f"section (4) - finite field element and matrix representation")
         print(f"====================================")
 
+        '''
         # Define a Finite Field:
         p = 47  # prime number to set the field
         fx_coeff = [42, 3, 0, 1]  # a irreducible poly' coeff': for a_n*x^n+...+a_1*x+a_0 -> [a_0, a_1, ...]
@@ -231,5 +242,17 @@ if __name__ == '__main__':
         print(f"polynomial b coeff' are:\n{b_coeff}")
         print(
             f"polynomial b in matrix representation:\n{b.matrix_representation}")  # [[1, 1, 1], [5, 45  1], [5, 2, 45]]
+        '''
+
+        p = 5
+        f_x = [2, 1, 1]
+        field = FiniteField.FiniteField(p, f_x)
+        a_coeff = [3, 2]
+        b_coeff = [1, 3]
+        a = FiniteFieldElement(field, a_coeff)
+        b = FiniteFieldElement(field, b_coeff)
+
+        print(a / b)
 
 
+    run_section_4()

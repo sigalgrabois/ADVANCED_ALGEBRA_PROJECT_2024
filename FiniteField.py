@@ -4,6 +4,7 @@ import numpy as np
 from galois import is_prime
 
 from FiniteFieldElement import FiniteFieldElement
+from PrimeFieldElement import PrimeFieldElement
 
 
 def is_irreducible(p, f_x):
@@ -74,16 +75,20 @@ class FiniteField:
 
     def elements(self):
         """
-        Generate all elements in the finite field.
+        Generate all elements in the finite field, starting from the most significant coefficient.
         :return: A generator yielding all elements in the finite field.
         """
         # Generate all possible coefficients
         coefficients = range(self.p)
 
         # Generate all combinations of coefficients for polynomials up to degree f_x_degree - 1
+        # We reverse the order of coefficients in each combination to prioritize higher degree terms
         for coeffs in itertools.product(coefficients, repeat=self.f_x_degree):
+            reversed_coeffs = tuple(reversed(coeffs))  # Reverse the tuple of coefficients
+            print(reversed_coeffs)
             # Yield the corresponding FiniteFieldElement
-            yield FiniteFieldElement(self, coeffs)
+            print(FiniteFieldElement(self, reversed_coeffs))
+            yield FiniteFieldElement(self, reversed_coeffs)
 
     def find_generator(self):
         """
