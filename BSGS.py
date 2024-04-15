@@ -7,7 +7,6 @@ import FiniteField
 import FiniteFieldElement
 
 
-
 def find_in_dict(dictionary, vector):
     for key, value in dictionary.items():
         for idx, vec in value:
@@ -86,4 +85,3 @@ try:
     result = BSGS(l, g, h)  # should raise an exception
 except ValueError as e:
     print(e)
-
