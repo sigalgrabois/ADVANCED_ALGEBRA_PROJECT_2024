@@ -1,4 +1,5 @@
 import itertools
+from typing import Set
 
 import numpy as np
 from galois import is_prime
@@ -17,7 +18,7 @@ def is_irreducible(p, f_x):
 
     # Check each element in the prime field to verify irreducibility
     for i in range(p):
-        if sum(coef * (i ** idx) for idx, coef in enumerate(reversed(f_x))) % p == 0:
+        if sum(coeff * (i ** idx) for idx, coeff in enumerate(f_x)) % p == 0:
             return False  # Polynomial is reducible if a root is found
 
     return True  # Polynomial is irreducible if no roots are found
@@ -62,10 +63,8 @@ class FiniteField:
         check_params(p, f_x)
         self.p = p  # prime whose corresponding field is the kernel of the described finite field
         self.f_x_original = f_x  # given irreduciable polynomial whose highest degree coefficient may be larger than 1
-        self.f_x_degree = len(
-            f_x) - 1  # the degree of the given irreduciable polynomial which also equivalent to the field extension dimension
-        self.f_x_monic = to_monic(p,
-                                  f_x)  # monic representation of the given irreduciable polynomial
+        self.f_x_degree = len(f_x) - 1  # the degree of the given irreduciable polynomial which also equivalent to the field extension dimension
+        self.f_x_monic = to_monic(p, f_x)  # monic representation of the given irreduciable polynomial
         self.field_size = p ** self.f_x_degree  # number of elements above the described finite field
 
         # Calculate congruate equivalency
@@ -84,10 +83,9 @@ class FiniteField:
         # Generate all combinations of coefficients for polynomials up to degree f_x_degree - 1
         # We reverse the order of coefficients in each combination to prioritize higher degree terms
         for coeffs in itertools.product(coefficients, repeat=self.f_x_degree):
+            # we used to reversed for the generator that in this case is left most significant
             reversed_coeffs = tuple(reversed(coeffs))  # Reverse the tuple of coefficients
-            print(reversed_coeffs)
             # Yield the corresponding FiniteFieldElement
-            print(FiniteFieldElement(self, reversed_coeffs))
             yield FiniteFieldElement(self, reversed_coeffs)
 
     def find_generator(self):
@@ -96,9 +94,10 @@ class FiniteField:
         :return: A generator of the multiplicative group.
         """
         e0_element = FiniteFieldElement(self, [0] * self.f_x_degree)
-
-        for alpha in self.elements():
-            if alpha == e0_element:
+        e1_element = FiniteFieldElement(self, [1] + [0] * (self.f_x_degree - 1))
+        elements = self.elements()
+        for alpha in elements:
+            if alpha == e0_element or alpha == e1_element:
                 continue  # Skip the zero element
             order_alpha = alpha.multiplicative_order()
             if order_alpha == self.field_size - 1:
@@ -113,3 +112,7 @@ class FiniteField:
 
     def __str__(self):
         return f"F_{self.p}({self.f_x_original})"
+
+    def __hash__(self):
+        # Convert coefficients tuple to a hashable type (e.g., frozenset)
+        return hash((self.p, tuple(self.f_x_original)))

@@ -59,29 +59,6 @@ def BSGS(l: FiniteField, g: FiniteFieldElement, h: FiniteFieldElement):
         if key is not None and baby_step_index is not None:
             return j * m + baby_step_index
         j += 1
+    raise ValueError("The result is not found - are you sure the element is a generator?")
 
-    raise ValueError("The result is not found.")
 
-
-# Example usage:
-p = 3
-fx_coeff = [2, 1, 0, 0, 1]
-l = FiniteField.FiniteField(p, fx_coeff)
-
-a = [0, 1, 1, 1]
-g = FiniteFieldElement.FiniteFieldElement(l, a)
-l2 = FiniteField.FiniteField(p, fx_coeff)
-h = FiniteFieldElement.FiniteFieldElement(l2, [0, 0, 1, 1])
-result = BSGS(l, g, h)
-
-print("The result is:")
-print(result)
-
-print("example of not found:")
-a = [0, 1, 2, 2]
-g = FiniteFieldElement.FiniteFieldElement(l, a)
-h = FiniteFieldElement.FiniteFieldElement(l2, [0, 2, 2, 0])
-try:
-    result = BSGS(l, g, h)  # should raise an exception
-except ValueError as e:
-    print(e)

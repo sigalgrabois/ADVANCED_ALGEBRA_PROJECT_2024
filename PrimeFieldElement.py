@@ -36,6 +36,8 @@ class PrimeFieldElement:
         else:
             raise ValueError("Cannot perform multiplication with different prime fields")
 
+
+
     def inverse(self):
         a, p = self.a, self.p
         if a == 0:
@@ -66,5 +68,6 @@ class PrimeFieldElement:
 
     def __pow__(self, power, modulo=None):
         return PrimeFieldElement(pow(self.a, power, self.p), self.p)
+
     def __str__(self):
         return "{}".format(self.a)

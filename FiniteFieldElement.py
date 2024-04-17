@@ -10,37 +10,6 @@ from sympy import Matrix
 # 1. delete the extra printings in the code below
 # 3. check consistency of the code - it brings back an element.
 
-def polynomial_mod(poly, mod_poly, p):
-    """
-    Reduce a polynomial by another polynomial in a finite field of order p.
-
-    :param poly: The polynomial to be reduced, given as a list of coefficients.
-                 Coefficients are ordered from the lowest degree to the highest.
-    :param mod_poly: The modulus polynomial, given as a list of coefficients.
-    :param p: The prime order of the finite field.
-    :return: The remainder of the division of poly by mod_poly in GF(p).
-    """
-    # Convert lists to NumPy polynomial objects
-    poly = np.poly1d(list(reversed(poly)))
-    mod_poly = np.poly1d(list(reversed(mod_poly)))
-
-    # Perform polynomial division in the field
-    quotient, remainder = np.polydiv(poly, mod_poly)
-
-    # The coefficients should be reduced modulo p
-    remainder_coeffs = np.mod(remainder.coeffs, p)
-
-    # Convert back to the standard list format (lowest degree to highest)
-    remainder_list = list(reversed(remainder_coeffs))
-
-    # Ensure the list has the correct length
-    deg_diff = len(mod_poly.coeffs) - 1 - len(remainder_list)
-    if deg_diff > 0:
-        remainder_list.extend([0] * deg_diff)
-
-    return remainder_list
-
-
 class FiniteFieldElement:
     def __init__(self, l, a):
         """
@@ -97,11 +66,9 @@ class FiniteFieldElement:
         return f"Polynomial Representation: {poly_repr}"
 
     def vec_print(self):
-        print("Vector Representation:")
         print(self.a)
 
     def matrix_print(self):
-        print("Matrix Representation:")
         for row in self.matrix_representation:
             print(' '.join(str(x) for x in row))
 
@@ -127,15 +94,10 @@ class FiniteFieldElement:
             raise ValueError("Both elements must be above the same field")
 
         # Direct polynomial multiplication followed by reduction (for simplicity here)
-        # In practice, you need to ensure this respects finite field rules
-        result_coeffs = np.polynomial.polynomial.polymul(self.a, other.a)
-        result_coeffs = np.mod(result_coeffs, self.l.p)  # Reduce each coefficient modulo p
-
-        # Reduce the result by the field's polynomial if necessary
-        # (Assuming you have a method to do polynomial division and find the remainder)
-        result_coeffs = polynomial_mod(result_coeffs, self.l.f_x_original, self.l.p)
-
-        return FiniteFieldElement(self.l, result_coeffs)
+        result_matrix = np.matmul(self.matrix_representation,other.matrix_representation)
+        coeffs = result_matrix[:, 0].tolist()
+        coeffs_res = [coeff % self.l.p for coeff in coeffs]
+        return FiniteFieldElement(self.l, coeffs_res)
 
     def __truediv__(self, other):
         if self.l != other.l:
@@ -201,7 +163,6 @@ class FiniteFieldElement:
         while curr_element != e1_element:
             curr_element *= self  # Multiply by self
             power += 1
-
         return power
 
     def __str__(self):
@@ -223,7 +184,6 @@ if __name__ == '__main__':
         print(f"section (4) - finite field element and matrix representation")
         print(f"====================================")
 
-        '''
         # Define a Finite Field:
         p = 47  # prime number to set the field
         fx_coeff = [42, 3, 0, 1]  # a irreducible poly' coeff': for a_n*x^n+...+a_1*x+a_0 -> [a_0, a_1, ...]
@@ -242,7 +202,6 @@ if __name__ == '__main__':
         print(f"polynomial b coeff' are:\n{b_coeff}")
         print(
             f"polynomial b in matrix representation:\n{b.matrix_representation}")  # [[1, 1, 1], [5, 45  1], [5, 2, 45]]
-        '''
 
         p = 5
         f_x = [2, 1, 1]
@@ -253,6 +212,7 @@ if __name__ == '__main__':
         b = FiniteFieldElement(field, b_coeff)
 
         print(a / b)
+        print(a * b)
 
 
     run_section_4()
