@@ -38,7 +38,7 @@ def xgcd(a, b):
     if a == 0 and b == 0:
         raise ValueError("At least one input must not be equal to 0.")
 
-    # Calculate the GCD using the absolute values of a and b to ensure positive results
+    # G.C.D calculation is done on the absolute values of the inputs and the signs are added back later on
     mag_a, mag_b = abs(a), abs(b)
 
     # Handle the case where one of the inputs is zero
@@ -71,5 +71,5 @@ def xgcd(a, b):
     # Perform a final sanity check to ensure the correctness of the algorithm
     if d <= 0 or d != s * a + t * b:
         raise ValueError("Something went wrong with the calculations.")
-
+    # return the gcd and the coefficients s and t
     return d, s, t

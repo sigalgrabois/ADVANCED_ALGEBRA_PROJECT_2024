@@ -1,20 +1,24 @@
 import numpy as np
-import galois
-
 import FiniteField
 import PrimeFieldElement
 from sympy import Matrix
 
 
-# TODO:
-# 1. delete the extra printings in the code below
-# 3. check consistency of the code - it brings back an element.
-
 class FiniteFieldElement:
+    """
+    This class represents a finite field element. Assuming the finite field, l, is an 'n' dimension extension field of a prime field GF(p),
+    the constructor is given l and a vector of length n which represents an element on the field
+    NOTES:
+    1. It is assumed given vector is of the form [a_0,a_1,...,a_n-1] which equivalent to the polynomial
+    a_0+a_1X+,...,a_n-1X^(n-1)
+    2. Even if the given coefficients {a_0,...,a_n-1} exceeds the range [0,p-1], they would be
+    translated to this range via mod p operation
+    """
+
     def __init__(self, l, a):
         """
         Initialize a finite field element.
-        :param a: the given vector
+        :param a: the given vector in form of [a_0, a_1, ..., a_n] where a_i is the coefficient of x^i
         :param l: the finite field above which a is considered
         """
         self.l = l
@@ -24,15 +28,22 @@ class FiniteFieldElement:
         if len(self.a) > l.f_x_degree:
             raise ValueError(f"Element's degree above the given field should not exceed {l.f_x_degree}")
 
+        # a boolean variable indicating whether the given a is the 0 element of the field
         self.is_0 = all(
-            coeff == 0 for coeff in self.a)  # all coefficients are non negative, their sum euqals 0 if they are all 0
+            coeff == 0 for coeff in self.a)  # all coefficients are non-negative, their sum equals 0 if they are all 0
 
+        # representation of the given element a as a matrix above GLn(GF(p))
         if self.is_0:
             self.matrix_representation = np.zeros((self.l.f_x_degree, self.l.f_x_degree), dtype=int)
         else:
+
             self.matrix_representation = self.calc_matrix_representation()
 
     def calc_matrix_representation(self):
+        """
+        calculating matrix representation of using the base {1,x,...,x^(n-1)), where n=l.f_x_degree
+        :return: matrix representation of the element
+        """
         a, l = self.a, self.l
         n = l.f_x_degree
         p = l.p
@@ -63,7 +74,7 @@ class FiniteFieldElement:
             for i, coeff in enumerate(self.a)
             if coeff != 0
         ) or '0'
-        return f"Polynomial Representation: {poly_repr}"
+        return f"{poly_repr}"
 
     def vec_print(self):
         print(self.a)
@@ -73,8 +84,11 @@ class FiniteFieldElement:
             print(' '.join(str(x) for x in row))
 
     def pretty_printing(self):
-        self.poly_print()
+        print("polynomial representation:")
+        print(self.poly_print())
+        print("vector representation:")
         self.vec_print()
+        print("matrix representation:")
         self.matrix_print()
 
     def __add__(self, other):
@@ -94,7 +108,7 @@ class FiniteFieldElement:
             raise ValueError("Both elements must be above the same field")
 
         # Direct polynomial multiplication followed by reduction (for simplicity here)
-        result_matrix = np.matmul(self.matrix_representation,other.matrix_representation)
+        result_matrix = np.matmul(self.matrix_representation, other.matrix_representation)
         coeffs = result_matrix[:, 0].tolist()
         coeffs_res = [coeff % self.l.p for coeff in coeffs]
         return FiniteFieldElement(self.l, coeffs_res)
@@ -166,7 +180,9 @@ class FiniteFieldElement:
         return power
 
     def __str__(self):
-        return self.poly_print()
+        # print the object in a readable format
+
+        return f"FiniteFieldElement(FiniteField(p:{self.l.p}, fx:{self.l.f_x_original}), a:{self.a})"
 
     def __repr__(self):
         coeffs_repr = ", ".join(f"{coeff} (mod {self.l.p})" for coeff in self.a)
@@ -176,43 +192,3 @@ class FiniteFieldElement:
         if isinstance(other, FiniteFieldElement):
             return self.a == other.a and self.l == other.l
         return False
-
-
-if __name__ == '__main__':
-    def run_section_4():
-        print(f"====================================")
-        print(f"section (4) - finite field element and matrix representation")
-        print(f"====================================")
-
-        # Define a Finite Field:
-        p = 47  # prime number to set the field
-        fx_coeff = [42, 3, 0, 1]  # a irreducible poly' coeff': for a_n*x^n+...+a_1*x+a_0 -> [a_0, a_1, ...]
-        l = FiniteField.FiniteField(p, fx_coeff)  # the finite field object
-
-        # Define a poly' by its coeff'
-        a_coeff = [1, 2, 3]
-        b_coeff = [1, 1, 1]
-        a = FiniteFieldElement(l, a_coeff)  # an object of finite field element
-        b = FiniteFieldElement(l, b_coeff)  # an object of finite field element
-
-        print(f"polynomial a coeff' are:\n{a_coeff}")
-        print(
-            f"polynomial a in matrix representation:\n{a.matrix_representation}\n")  # [[1, 2, 3], [15, 39, 2], [10, 9, 39]]
-
-        print(f"polynomial b coeff' are:\n{b_coeff}")
-        print(
-            f"polynomial b in matrix representation:\n{b.matrix_representation}")  # [[1, 1, 1], [5, 45  1], [5, 2, 45]]
-
-        p = 5
-        f_x = [2, 1, 1]
-        field = FiniteField.FiniteField(p, f_x)
-        a_coeff = [3, 2]
-        b_coeff = [1, 3]
-        a = FiniteFieldElement(field, a_coeff)
-        b = FiniteFieldElement(field, b_coeff)
-
-        print(a / b)
-        print(a * b)
-
-
-    run_section_4()

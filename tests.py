@@ -1,7 +1,5 @@
 import unittest
 
-import numpy as np
-
 from FiniteField import FiniteField
 from FiniteFieldElement import FiniteFieldElement
 
@@ -39,7 +37,7 @@ class TestFiniteFieldElement(unittest.TestCase):
 
     def test_str(self):
         x = FiniteFieldElement(self.finite_field, [1, 2, 3])
-        self.assertEqual(str(x), "1 (mod 5)*x^0 + 2 (mod 5)*x^1 + 3 (mod 5)*x^2")
+        self.assertEqual(str(x), "1 + 2x^1 + 3x^2")
 
     def test_repr(self):
         x = FiniteFieldElement(self.finite_field, [1, 2, 3])
@@ -62,8 +60,6 @@ class TestFiniteFieldElement(unittest.TestCase):
             x - y
             x * y
             x / y
-
-
 
     def test_multiplicative_order(self):
         field = FiniteField(3, [1, 0, 1])
@@ -105,7 +101,6 @@ class TestFiniteFieldElement(unittest.TestCase):
         self.assertEqual(mult_with_self, mult_sqr)
 
 
-
 class TestElementExponent(unittest.TestCase):
     def test_exponent_positive(self):
         field = FiniteField(61, [1, 0, 1, 1])
@@ -117,7 +112,7 @@ class TestElementExponent(unittest.TestCase):
         field = FiniteField(61, [1, 0, 1, 1])
         element1 = FiniteFieldElement(field, [0, 1, 0])
         element2 = FiniteFieldElement(field, [1, 0, 0])
-        self.assertEqual(element1.__pow__(0) , element2)
+        self.assertEqual(element1.__pow__(0), element2)
 
     def test_exponent_negative_p2(self):
         field = FiniteField(2, [1, 1, 1])
@@ -153,5 +148,3 @@ class TestElementExponent(unittest.TestCase):
         z = x ** t
         check_element = FiniteFieldElement(field, [1, 0])
         self.assertEqual(check_element, z)
-
-
