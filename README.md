@@ -26,9 +26,9 @@ This project implements arithmetic in finite fields of cardinality \(p^n\) for a
 * To run the tests for different sections of the project, you can use the `tests.py` script: <br>
 `python tests.py`
 This script will automatically run all predefined unit tests, verifying the correctness of each module.
-* For a practical demonstration of the project, particularly the BSGS algorithm, use the orchestrator.py script:python orchestrator.py
-  #### Note:
-Ensure that Python is installed on your system and that all dependencies specified in the project's requirements.txt are installed: <br>
+* For a practical demonstration of the project, particularly the BSGS algorithm, use the `orchestrator.py` script: <br>
+  python orchestrator.py
+  #### Note: Ensure that Python is installed on your system and that all dependencies specified in the project's requirements.txt are installed: <br>
 `pip install -r requirements.txt`
 
 
