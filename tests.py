@@ -37,7 +37,7 @@ class TestFiniteFieldElement(unittest.TestCase):
 
     def test_str(self):
         x = FiniteFieldElement(self.finite_field, [1, 2, 3])
-        self.assertEqual(str(x), "1 + 2x^1 + 3x^2")
+        self.assertEqual(str(x), "FiniteFieldElement(FiniteField(p:5, fx:[3, 3, 0, 1]), a:[1, 2, 3])")
 
     def test_repr(self):
         x = FiniteFieldElement(self.finite_field, [1, 2, 3])
