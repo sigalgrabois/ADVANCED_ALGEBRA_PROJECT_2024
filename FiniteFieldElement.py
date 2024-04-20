@@ -41,13 +41,15 @@ class FiniteFieldElement:
 
     def calc_matrix_representation(self):
         """
-        calculating matrix representation of using the base {1,x,...,x^(n-1)), where n=l.f_x_degree
+        The function calculates a matrix representation of the given element, a,
+        which is formed by the elementary basis {1,x,...,x^(n-1)} and the linear transformation x^i->a*x^i s.t.
+        element_matrix_representation = [a, aX,..., aX^(n-1)]
         :return: matrix representation of the element
         """
         a, l = self.a, self.l
-        n = l.f_x_degree
+        n = l.f_x_degree  # extension dimension of the finite field
         p = l.p
-        element_matrix_representation = np.zeros((n, n), dtype=int)
+        element_matrix_representation = np.zeros((n, n), dtype=int)  # would hold the matrix representation of a
 
         # Initialization: first column equals the element itself
         temp_polynomial = np.zeros(n, dtype=int)
@@ -55,13 +57,19 @@ class FiniteFieldElement:
         element_matrix_representation[:, 0] = temp_polynomial
 
         for i in range(1, n):
-            # Multiplication in x
-            shift_right_polynomial = np.concatenate(([0], temp_polynomial[:n - 1]))  # np.roll(temp_polynomial, shift=1)
-            if temp_polynomial[-1] != 0:
+            # Multiplication in x: if the highest degree of 'temp_polynomial' (the last element) is zero,
+            # then a cyclic shift one place right of it, is sufficient to represent multiplication.
+            # Otherwise, the result should be the sum of the congruate equivalent of the highest degree
+            # and the shift right of the remaining elements of 'temp_polynomial'
+
+            shift_right_polynomial = np.concatenate(([0], temp_polynomial[:n - 1]))
+            if temp_polynomial[-1] != 0:  # then the congruent equivalent of the highest degree should be calculated
                 congruent_equivalent = np.mod(temp_polynomial[-1] * l.congruate_equivalency,
-                                              p)  # [(temp_polynomial[-1] * c) % p for c in l.congruate_equivalency]
-                temp_polynomial = (congruent_equivalent + shift_right_polynomial) % p
+                                              p)
+                temp_polynomial = (congruent_equivalent + shift_right_polynomial) % p  # mod p is applied to ensure
+                # coefficients are above GF(p)
             else:
+                # cyclic shift right is sufficient
                 temp_polynomial = shift_right_polynomial
 
             element_matrix_representation[:, i] = temp_polynomial
@@ -114,6 +122,18 @@ class FiniteFieldElement:
         return FiniteFieldElement(self.l, coeffs_res)
 
     def __truediv__(self, other):
+        """
+        Perform division of two elements in the finite field.
+        :param other: The element to divide by.
+        :return: The result of the division.
+
+        it is desired to calculate multiplication by 'obj.matrix_representation*inverse(
+        other_obj.matrix_representation)'. Only that matrix inversion may result in a fractional representation which
+        a simple modulo wouldn't resolve. To combat this we rely on the formula: A^(-1)=det(A)^(-1)*Adjugate(A) The
+        result of Adjugate(A) is assembled with integers (except perhaps a negligible deviation resulting from
+        calculation is performed, hence round is used)
+
+        """
         if self.l != other.l:
             raise ValueError("Both elements must be above the same field")
         if other.is_0:
