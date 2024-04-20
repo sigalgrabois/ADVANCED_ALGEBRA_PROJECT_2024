@@ -22,7 +22,7 @@ This project implements arithmetic in finite fields of cardinality \(p^n\) for a
 8. **Generator Identification**: Includes a method in `FiniteField` to find generators for the group \(l^\times\), which is essential for constructing cyclic groups.
 9. **BSGS Algorithm**: Features the Baby-Step Giant-Step algorithm for addressing the discrete logarithm problem in \(l\), enhancing the security analysis.
 
-## Runnig the project
+## Running the project
 * To run the tests for different sections of the project, you can use the `tests.py` script: <br>
 `python tests.py`
 This script will automatically run all predefined unit tests, verifying the correctness of each module.
