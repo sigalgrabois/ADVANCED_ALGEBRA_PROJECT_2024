@@ -75,7 +75,8 @@ class FiniteField:
         self.p = p  # prime whose corresponding field is the kernel of the described finite field
         self.f_x_original = f_x  # given irreducible polynomial whose highest degree coefficient may be larger than 1
         self.f_x_degree = len(
-            f_x) - 1  # the degree of the given irreduciable polynomial which also equivalent to the field extension dimension
+            f_x) - 1  # the degree of the given irreduciable polynomial which also equivalent to the field extension
+        # dimension
         self.f_x_monic = to_monic(p, f_x)  # monic representation of the given irreducible polynomial
         self.field_size = p ** self.f_x_degree  # number of elements above the described finite field
 

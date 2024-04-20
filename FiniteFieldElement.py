@@ -118,7 +118,8 @@ class FiniteFieldElement:
         # Direct polynomial multiplication followed by reduction (for simplicity here)
         result_matrix = np.matmul(self.matrix_representation, other.matrix_representation)
         coeffs = result_matrix[:, 0].tolist()
-        coeffs_res = [coeff % self.l.p for coeff in coeffs]
+        coeffs_res = [coeff % self.l.p for coeff in
+                      coeffs]  # matrix elements should be above the prime which serves as the kernel of the finite field
         return FiniteFieldElement(self.l, coeffs_res)
 
     def __truediv__(self, other):
@@ -162,7 +163,8 @@ class FiniteFieldElement:
         return FiniteFieldElement(other.l, result.tolist())
 
     def __pow__(self, exponent):
-        e1_element = FiniteFieldElement(self.l, [1] + [0] * (self.l.f_x_degree - 1))
+        e1_element = FiniteFieldElement(self.l, [1] + [0] * (
+                self.l.f_x_degree - 1))  # The multiplicative identity element in the field
         base = self
         if exponent == 0:
             # Anything raised to the power of 0 is 1
@@ -193,7 +195,8 @@ class FiniteFieldElement:
 
         power = 1
         curr_element = self
-        e1_element = FiniteFieldElement(self.l, [1] + [0] * (self.l.f_x_degree - 1))
+        e1_element = FiniteFieldElement(self.l, [1] + [0] * (
+                self.l.f_x_degree - 1))  # The multiplicative identity element in the field
         while curr_element != e1_element:
             curr_element *= self  # Multiply by self
             power += 1
@@ -201,7 +204,6 @@ class FiniteFieldElement:
 
     def __str__(self):
         # print the object in a readable format
-
         return f"FiniteFieldElement(FiniteField(p:{self.l.p}, fx:{self.l.f_x_original}), a:{self.a})"
 
     def __repr__(self):
