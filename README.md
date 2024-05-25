@@ -1,6 +1,6 @@
 #                                                     Advanced Algebra: Finite Field Implementation (Course 83-804, 2024)
 
- ###                                              By Ayelet Aharon (200641058), Erel Naor (206913600) and Sigal Grabois(319009304)
+ ###                                              By Ayelet Aharon , Erel Naor and Sigal Grabois
 
 ## Overview
 This project implements arithmetic in finite fields of cardinality \(p^n\) for a given prime \(p\) and natural number \(n\). An \(n\)-dimensional extension of the prime field \(k = \mathbb{F}_p\) is constructed using an irreducible polynomial \(f(x)\) in \(k[x]\).
